@@ -1,0 +1,27 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/app
+    environment:
+      AMQP_URL: 'amqp://localhost:5672'
+    docker:
+      - image: node:10
+      - image: rabbitmq:3.5.4
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - dependency-cache-{{checksum "package.json"}}
+            - dependency-cache-
+      - run:
+          name: Install dependencies
+          command: yarn
+      - save_cache:
+          key: dependency-cache-{{checksum "package.json"}}
+          paths:
+            - node_modules
+      - run:
+          name: Run tests
+          command: |
+            chmod +x ./wait-for-it.sh
+            ./wait-for-it.sh localhost:5672 -- yarn test
