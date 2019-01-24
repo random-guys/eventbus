@@ -3,27 +3,6 @@ import { NO_AMPQ_URL_ERROR, INIT_EVENTBUS_ERROR } from './errors';
 
 type RabbitMQCallback = (msg: amqp.ConsumeMessage) => any;
 
-// export interface IEventBus {
-//   init(amqp_url: string, eventsExchange?: string): Promise<Boolean>;
-//   close(): Promise<void>;
-//   emit(eventName: string, data: object): Promise<boolean>;
-//   on(eventName: string, callback: RabbitMQCallback): Promise<any>;
-//   queue(queueName: string, data: object): Promise<boolean>;
-//   consume(
-//     queueName: string,
-//     callback: (message: any) => any,
-//     limit: number,
-//     options?: amqp.Options.Consume,
-//   ): Promise<amqp.Replies.Consume>;
-//   getPubChannel(): amqp.Channel;
-//   getSubChannel(): amqp.Channel;
-//   getPubConnection(): amqp.Connection;
-//   getSubConnection(): amqp.Connection;
-//   setEventsExchange(eventsExchange: string);
-//   getEventsExchange(): string;
-//   acknowledgeMessage(message: ConsumeMessage);
-// }
-
 class EventBus {
   private pubConnection: amqp.Connection;
   private subConnection: amqp.Connection;
