@@ -17,7 +17,6 @@
     "@types/amqplib": "^0.5.9",
     "@types/dotenv": "^6.1.0",
     "@types/jest": "^23.3.13",
-    "@types/sinon": "^7.0.4",
     "dotenv": "^6.2.0",
     "jest": "^23.6.0",
     "ts-jest": "^23.10.5",
