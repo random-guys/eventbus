@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    build: .
+    environment:
+      AMQP_URL: amqp://rabbitmq
+    depends_on:
+      - rabbitmq
+    command: ['./wait-for-it.sh', 'rabbitmq:5672', '--', 'yarn', 'test']
+  rabbitmq:
+    image: rabbitmq:3
+    hostname: 'rabbit1'
