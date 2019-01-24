@@ -1,5 +1,5 @@
 {
-  "name": "@randomguys/eventbus",
+  "name": "@random-guys/eventbus",
   "version": "1.0.0",
   "description": "Event Bus service for service-service communication via RabbitMQ",
   "main": "dist/index.js",
