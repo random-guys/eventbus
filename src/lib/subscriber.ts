@@ -17,40 +17,47 @@ class Subscriber extends Base implements BaseContract {
   }
 
   /**
-   * Listens for an `event` on an `exchange` and invokes the provided `callback` when
+   * Listens for an `event` on a queue `queueName` routed by an exchange `exchange` and invokes the provided `callback` when
    * the event gets emitted.
    * Works as a pub-sub subscriber.
-   * @param exchange Exchange to listen for events on
+   * @param exchange Exchange used for routing events
    * @param event Event to be consumed (routing key)
+   * @param queueName The name of the queue to listen for events on
    * @param callback Callback to be invoked when event gets emitted
+   * @param limit The number of concurrent jobs the listener can handle. Defaults to 5
+   * @param options Optional options. If the noAck option is set to true or not specified,
+   * you are expected to call channel.ack(message) at the end of the supplied
+   * callback inorder to notify the queue that the message has been acknowledged.
    * @returns Promise<amqp.Replies.Consume> AMQP reply
    */
   async on(
     exchange: string,
     event: string,
+    queueName: string,
     callback: RabbitMQCallback,
+    limit: number = 5,
+    options?: amqp.Options.Consume
   ): Promise<amqp.Replies.Consume> {
     this.isEventBusInitialized();
 
+    // limit number of concurrent jobs
+    this.channel.prefetch(limit);
+
+    // Assert exchange and queue existence
     await this.channel.assertExchange(exchange, 'topic');
+    await this.channel.assertQueue(queueName, { durable: true });
 
-    // create temporary queue that gets deleted when connection closes
-    const { queue } = await this.channel.assertQueue('', {
-      exclusive: true,
-    });
+    // Bind queue to get `event` from exchange
+    await this.channel.bindQueue(queueName, exchange, event);
 
-    await this.channel.bindQueue(queue, exchange, event);
-
-    return this.channel.consume(queue, callback, {
-      noAck: true,
-    });
+    return this.channel.consume(queueName, callback, options);
   }
 
   /**
    * Consumes tasks/messages from a queue `queueName` and invokes the provided callback
    * @param queueName Queue to consume tasks from
    * @param callback Callback to be invoked for each message that gets sent to the queue
-   * @param limit The number of concurrent jobs the consumer can handle. Defaults to 3
+   * @param limit The number of concurrent jobs the consumer can handle. Defaults to 5
    * @param options Optional options. If the noAck option is set to true or not specified,
    * you are expected to call channel.ack(message) at the end of the supplied
    * callback inorder to notify the queue that the message has been acknowledged.
@@ -58,14 +65,17 @@ class Subscriber extends Base implements BaseContract {
   async consume(
     queueName: string,
     callback: RabbitMQCallback,
-    limit: number = 3,
-    options?: amqp.Options.Consume,
+    limit: number = 5,
+    options?: amqp.Options.Consume
   ): Promise<amqp.Replies.Consume> {
     this.isEventBusInitialized();
 
     // limit number of concurrent jobs
     this.channel.prefetch(limit);
+
+    // Assert queue's existence
     await this.channel.assertQueue(queueName, { durable: true });
+
     return this.channel.consume(queueName, callback, options);
   }
 
