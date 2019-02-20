@@ -10,9 +10,9 @@ Event Bus (should have named it _Danfo_ tbh) is a wrapper around the Node.js Rab
 
 ## To Use
 
-`yarn add @randomguys/eventbus`
+`yarn add @random-guys/eventbus`
 or
-`npm install @randomguys/eventbus`
+`npm install @random-guys/eventbus`
 
 ## Integration test
 
