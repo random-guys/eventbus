@@ -31,17 +31,17 @@ test('it throws if Event Bus methods are called before initializing Event Bus', 
 
   await expect(subscriber.close()).rejects.toThrow(INIT_EVENTBUS_ERROR);
 
-  await expect(subscriber.on(undefined, undefined, undefined)).rejects.toThrow(
-    INIT_EVENTBUS_ERROR,
-  );
+  await expect(
+    subscriber.on(undefined, undefined, undefined, undefined)
+  ).rejects.toThrow(INIT_EVENTBUS_ERROR);
   await expect(subscriber.consume(undefined, undefined)).rejects.toThrow(
-    INIT_EVENTBUS_ERROR,
+    INIT_EVENTBUS_ERROR
   );
   await expect(() => subscriber.acknowledgeMessage(undefined)).toThrow(
-    INIT_EVENTBUS_ERROR,
+    INIT_EVENTBUS_ERROR
   );
   await expect(() => subscriber.rejectMessage(undefined)).toThrow(
-    INIT_EVENTBUS_ERROR,
+    INIT_EVENTBUS_ERROR
   );
 });
 
@@ -54,7 +54,7 @@ test('it creates an AMQP connection and channel', async () => {
 test('it creates a new subscriber instance', () => {
   const newSubscriber = subscriber.create();
   expect(Object.getPrototypeOf(newSubscriber)).toBe(
-    Object.getPrototypeOf(subscriber),
+    Object.getPrototypeOf(subscriber)
   );
   expect(() => newSubscriber.getChannel()).toThrow(INIT_EVENTBUS_ERROR);
   expect(() => newSubscriber.getConnection()).toThrow(INIT_EVENTBUS_ERROR);
@@ -73,10 +73,16 @@ test('it listens on and gets data from an emitted event', async done => {
     const data = JSON.parse(message.content.toString());
     expect(data.topic).toBe('test.emit');
     expect(data.type).toBe('test');
+    subscriber.acknowledgeMessage(message);
     done();
   };
 
-  const result = await subscriber.on(TEST_EXCHANGE, 'test.emit', callback);
+  const result = await subscriber.on(
+    TEST_EXCHANGE,
+    'test.emit',
+    'LISTENER_QUEUE',
+    callback
+  );
   expect(result.consumerTag).toBeDefined();
 
   // emit mock event
