@@ -1,5 +1,5 @@
-import amqp from 'amqplib';
-import { NO_AMPQ_URL_ERROR, INIT_EVENTBUS_ERROR } from './errors';
+import amqp from "amqplib";
+import { NO_AMPQ_URL_ERROR, INIT_EVENTBUS_ERROR } from "./errors";
 
 /**
  * Base class for extending Event Bus behaviour.
@@ -19,11 +19,8 @@ export default class Base {
 
     if (!amqp_url) throw new Error(NO_AMPQ_URL_ERROR);
 
-    // set connection heartbeat to 60
-    const connectionUrl = amqp_url + '?heartbeat=60';
-
     // create connection
-    this.connection = await amqp.connect(connectionUrl);
+    this.connection = await amqp.connect(amqp_url);
 
     // create channel
     this.channel = await this.connection.createChannel();

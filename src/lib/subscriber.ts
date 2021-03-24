@@ -1,5 +1,5 @@
-import amqp, { ConsumeMessage } from 'amqplib';
-import Base, { BaseContract } from './base';
+import amqp, { ConsumeMessage } from "amqplib";
+import Base, { BaseContract } from "./base";
 
 type RabbitMQCallback = (msg: amqp.ConsumeMessage) => any;
 
@@ -44,7 +44,7 @@ class Subscriber extends Base implements BaseContract {
     this.channel.prefetch(limit);
 
     // Assert exchange and queue existence
-    await this.channel.assertExchange(exchange, 'topic');
+    await this.channel.assertExchange(exchange, "topic");
     await this.channel.assertQueue(queueName, { durable: true });
 
     // Bind queue to get `event` from exchange
