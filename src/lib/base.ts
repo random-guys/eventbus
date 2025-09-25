@@ -1,4 +1,4 @@
-import { Channel, connect, ChannelModel } from "amqplib";
+import { Channel, connect, ChannelModel, Options } from "amqplib";
 import { NO_AMPQ_URL_ERROR, INIT_EVENTBUS_ERROR } from "./errors";
 
 interface SocketOptions {
@@ -22,7 +22,7 @@ export default class Base {
    * @returns {boolean} Returns true if initialization was successful.
    */
   async init(
-    amqp_url: string,
+    amqp_url: string | Options.Connect,
     socketOptions: SocketOptions = null
   ): Promise<boolean> {
     if (this.connection) return true; // prevents us from carelessly creating multiple AMQP connections in our app.
